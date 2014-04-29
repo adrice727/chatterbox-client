@@ -17,16 +17,21 @@
     <div id="main">
       <h1>chatterbox</h1>
       <div class="side_display"></div>
+      <form>Room: <input class="room_input" type="text" name="roomName"</form>
+      <button class="roomButton">Create Room</button>
       <div class="chat">
-        <ul class="message_list"></ul>
-        <div class="new_message">
-          <form>
-          Message:  <input class="message_input" type="text" name="message_text">
-          </form>
-          <button class="button">Submit</button>
-
+        <div id="roomSelect">
+          <div class="message_list" id="chats"></div>
+          <div class="new_message">
+            <form>
+            Message:  <input class="message_input" type="text" name="message_text">
+            </form>
+            <button class="chatButton">Submit</button>
+          </div>
         </div>
       </div>
+
     </div>
+
   </body>
 </html>
