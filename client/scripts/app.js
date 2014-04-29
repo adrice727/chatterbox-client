@@ -16,7 +16,29 @@ var app = {};
       app.roomNames.push(roomName);
     }
 
-    console.log(app.roomNames, app.currentRoom);
+    $("#roomSelect").append("<div></div>");
+
+  };
+
+  app.handleSubmit = function(){
+    // console.log('here');
+    var user = window.location.search.split("=")[1];
+    var text = $(".message_input").val();
+
+
+    if (text !==""){
+
+      var message = {
+        'username': user,
+        'text': text,
+        'roomName': app.currentRoom
+      };
+      app.send(message);
+
+    } else {
+      alert("Please enter a message");
+    }
+
   };
 
   app.init = function(){
@@ -27,23 +49,9 @@ var app = {};
 
       $("body").on('click', '.chatButton', function(e){
         e.preventDefault();
-        // e.stopPropagation();
-        var user = window.location.search.split("=")[1];
-        var text = $(".message_input").val();
-
-
-        if (text !==""){
-
-          var message = {
-            'username': user,
-            'text': text,
-            'roomName': app.currentRoom
-          };
-          app.send(message);
-
-        } else {
-          alert("Please enter a message");
-        }
+        e.stopPropagation();
+        //
+        app.handleSubmit();
 
 
       });
@@ -99,27 +107,32 @@ var app = {};
       });
 
 
-      $("body").on("click", ".userName", function(){
-        console.log($(this));
+      $("body").on("click", ".username", function(){
+        // console.log($(this));
         var name = $(this).text();
-        console.log(app.friends, name);
-        app.friends[name] = true;
+        // console.log(app.friends, name);
+        app.addFriend(name);
+        // app.friends[name] = true;
       })
 
     });
   };
 
+
+  app.addFriend = function(name){
+    app.friends[name]=true;
+  };
   app.addMessage = function(obj){
 
-      var userName = obj.username;
+      var username = obj.username;
       var messageText= obj.text;
       // var time = $.timeago(obj.createdAt);
       var time = obj.createdAt;
 
 
       $("#chats").prepend("<div class='message'></div>");
-      $(".message").first().append("<div class='userName'></div>");
-      $(".userName").first().text(userName);
+      $(".message").first().append("<div class='username'></div>");
+      $(".username").first().text(username);
 
 
       $(".message").first().append("<div class='time'></div>");
@@ -127,7 +140,7 @@ var app = {};
       $(".message").first().append("<div class='message_text'></div>");
       $(".message_text").first().text(messageText);
 
-      if (app.friends[userName]){
+      if (app.friends[username]){
         $(".message_text").first().addClass("friend");
       }
   };
