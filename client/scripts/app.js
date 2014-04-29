@@ -2,7 +2,9 @@
 var app = {};
   app.roomNames = [];
 
-  app.currentRoom = null;
+  app.friends = {};
+
+  app.currentRoom = 'room';
 
   app.addRoom = function(roomName){
 
@@ -27,7 +29,6 @@ var app = {};
         e.preventDefault();
         // e.stopPropagation();
         var user = window.location.search.split("=")[1];
-        var chatRoom = "chat room";
         var text = $(".message_input").val();
 
 
@@ -36,7 +37,7 @@ var app = {};
           var message = {
             'username': user,
             'text': text,
-            'roomname': app.room
+            'roomName': app.currentRoom
           };
           app.send(message);
 
@@ -59,7 +60,7 @@ var app = {};
             var message = {
               'username': user,
               'text': text,
-              'roomname': app.room
+              'roomName': app.currentRoom
             };
             app.send(message);
 
@@ -98,6 +99,12 @@ var app = {};
       });
 
 
+      $("body").on("click", ".userName", function(){
+        console.log($(this));
+        var name = $(this).text();
+        console.log(app.friends, name);
+        app.friends[name] = true;
+      })
 
     });
   };
@@ -113,11 +120,16 @@ var app = {};
       $("#chats").prepend("<div class='message'></div>");
       $(".message").first().append("<div class='userName'></div>");
       $(".userName").first().text(userName);
+
+
       $(".message").first().append("<div class='time'></div>");
       $(".time").first().text(time);
       $(".message").first().append("<div class='message_text'></div>");
       $(".message_text").first().text(messageText);
 
+      if (app.friends[userName]){
+        $(".message_text").first().addClass("friend");
+      }
   };
 
   app.clearMessages = function() {
@@ -135,12 +147,19 @@ var app = {};
       contentType: 'application/json',
       success: function (data) {
         app.clearMessages();
-
-        _.each(data.results, function(obj){
-          app.addMessage(obj);
-        });
-
+        if (app.currentRoom === 'room'){
+          _.each(data.results, function(obj){
+            app.addMessage(obj);
+          });
+        } else {
+          _.each(data.results, function(obj){
+            if (obj.roomName === app.currentRoom){
+              app.addMessage(obj);
+            }
+          });
+        }
       },
+
       error: function (data) {
         console.error('chatterbox: Failed to fetch messages');
       }
